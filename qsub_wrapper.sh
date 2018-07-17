@@ -179,6 +179,9 @@ CMD="${CMD} ${ENV_SCRIPT} ${ENV_ARGS} -- ${SCRIPTPATH} ${SCRIPTARGS}"
 JOBID=$(${CMD})
 
 echo "JOB ID: ${JOBID}"
+echo "To cancel your job: 'qdel [-f] ${JOBID}'"
+echo "To cancel all jobs: 'qdel -u $(whoami)'"
+echo "For stats about job: 'qstat -j ${JOBID}'"
 
 # Start polling job status
 #watch -n 0.5 qstat -j ${JOBID}
