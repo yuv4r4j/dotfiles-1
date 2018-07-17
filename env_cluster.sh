@@ -20,7 +20,7 @@ while [[ $# -gt 0 ]]; do
         SCRIPTARGS="$2"
         shift 2
         ;;
-    c|--conda)
+    -c|--conda)
         CONDAENV="$2"
         shift 2
         ;;
@@ -77,7 +77,7 @@ if [ -d "${CWD}/.git" ]; then
     git branch -v
 fi
 
-echo "About to execute: '${CMD}' from '${CWD}'"
+echo "About to execute: \"${CMD}\" from \"${CWD}\""
 mkdir -p "${CWD}" && cd "${CWD}"
 exec ${CMD}
 
