@@ -9,7 +9,6 @@ CWD=""
 
 CMD=""
 
-POSITIONAL=()
 while [[ $# -gt 0 ]]; do
     key="$1"
     case ${key} in
@@ -33,13 +32,20 @@ while [[ $# -gt 0 ]]; do
         shift
         break
         ;;
-    *) # unknown option
-        POSITIONAL+=("$1") # save it in an array for later
+    *)
+        echo "Ignoring unknown wrapper argument: \"$1\""
         shift
         ;;
     esac
 done
-set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ "$#" -lt "1" ]; then
+    echo "Script path is not specified"
+    exit -1
+fi
+SCRIPTPATH="$1"
+shift
+SCRIPTARGS="$@"
 
 # validate launchable script is specified
 if [ -z "${SCRIPTPATH}" -o ! -f "${SCRIPTPATH}" ]; then

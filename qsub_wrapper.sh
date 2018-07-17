@@ -3,11 +3,11 @@ set -e
 #set -x
 
 help() {
+    echo "  $0 [wrapper_args] -- <script_path> [script_args]"
+    echo
     echo "Wrapper around SGE 'qsub' command, takes care of BIWI-specific"
     echo "command line options, helps to check job status and log file shortly"
     echo "after job start. Refer to BIWI wiki for details. Command line options:"
-    echo "  -s|--script      : a valid script path accessible from SGE"
-    echo "  [-a|--args]      : script arguments in one quoted line"
     echo "  [-q|--queue]=0   : id of queue, 0 (short), 1 (mid), 2 (long)"
     echo "  [-n|--numgpus]=1 : number of GPUs to request"
     echo "  [-m|--mem]=8G    : hard limit of host memory"
@@ -31,18 +31,9 @@ CMD="${CMD} -w e"
 # Inherit the current shell environment to the job
 CMD="${CMD} -V"
 
-POSITIONAL=()
 while [[ $# -gt 0 ]]; do
     key="$1"
     case ${key} in
-    -s|--script)
-        SCRIPTPATH="$2"
-        shift 2
-        ;;
-    -a|--args)
-        SCRIPTARGS="$2"
-        shift 2
-        ;;
     -q|--queue)
         GPUQUEUEID="$2"
         shift 2
@@ -72,12 +63,19 @@ while [[ $# -gt 0 ]]; do
         break
         ;;
     *) # unknown option
-        POSITIONAL+=("$1") # save it in an array for later
+        echo "Ignoring unknown wrapper argument: \"$1\""
         shift
         ;;
     esac
 done
-set -- "${POSITIONAL[@]}" # restore positional parameters
+
+if [ "$#" -lt "1" ]; then
+    echo "Script path is not specified, refer to -h for help with syntax"
+    exit -1
+fi
+SCRIPTPATH="$1"
+shift
+SCRIPTARGS="$@"
 
 # validate launchable script is specified
 if [ -z "${SCRIPTPATH}" -o ! -f "${SCRIPTPATH}" ]; then
@@ -171,14 +169,11 @@ CMD="${CMD} -terse"
 CMD="${CMD} -o ${LOGSPATH}"
 
 ENV_SCRIPT="${HOME}/code/dotfiles/env_cluster.sh"
-ENV_ARGS="-s ${SCRIPTPATH}"
-if [ ! -z "${SCRIPTARGS}" ]; then
-    ENV_ARGS="${ENV_ARGS} -a \"${SCRIPTARGS}\""
-fi
+ENV_ARGS="-w ${CWD}"
 if [ ! -z "${CONDAENV}" ]; then
     ENV_ARGS="${ENV_ARGS} -c ${CONDAENV}"
 fi
-CMD="${CMD} ${ENV_SCRIPT} ${ENV_ARGS} -w ${CWD}"
+CMD="${CMD} ${ENV_SCRIPT} ${ENV_ARGS} -- ${SCRIPTPATH} ${SCRIPTARGS}"
 
 #echo "About to execute: '${CMD}'"
 JOBID=$(${CMD})
