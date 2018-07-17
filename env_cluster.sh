@@ -71,10 +71,11 @@ if [ ! -z "${CONDAENV}" ]; then
     source activate "${CONDAENV}"
 fi
 
-if [ -d "${CWD}/.git" ]; then
+SCRIPTDIR=${SCRIPTPATH%/*}
+if [ -d "${SCRIPTDIR}/.git" ]; then
     echo "Repository snapshot info:"
-    git remote -v
-    git branch -v
+    git --git-dir="${SCRIPTDIR}/.git" remote -v
+    git --git-dir="${SCRIPTDIR}/.git" branch -v
 fi
 
 echo "About to execute: \"${CMD}\" from \"${CWD}\""
