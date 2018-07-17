@@ -85,6 +85,9 @@ if [ -z "${SCRIPTPATH}" -o ! -f "${SCRIPTPATH}" ]; then
     exit -1
 fi
 
+# Make sure SCRIPTPATH is absolute
+SCRIPTPATH="$(readlink -f ${SCRIPTPATH})"
+
 # Worldwide permissions to make SGE happy
 chmod 0777 ${SCRIPTPATH}
 
@@ -101,8 +104,17 @@ SCRIPTNAME=${SCRIPTNAMEEXT%.*}
 DIRNAME=${SCRIPTPATH%/*}
 
 if [ -z "${CWD}" ]; then
+    echo "Using CWD=${DIRNAME}"
     CWD="${DIRNAME}"
 fi
+
+if [ ! -d "${CWD}" ]; then
+    echo "CWD=${CWD} does not exist, creating directory"
+    mkdir -p "${CWD}"
+fi
+
+# Make sure CWD is absolute
+CWD="$(readlink -f ${CWD})"
 
 # Name of the job
 CMD="${CMD} -N ${SCRIPTNAME}"
@@ -158,7 +170,7 @@ CMD="${CMD} -terse"
 # Redirect STDOUT
 CMD="${CMD} -o ${LOGSPATH}"
 
-ENV_SCRIPT="${HOME}/code/env/env_cluster.sh"
+ENV_SCRIPT="${HOME}/code/dotfiles/env_cluster.sh"
 ENV_ARGS="-s ${SCRIPTPATH}"
 if [ ! -z "${SCRIPTARGS}" ]; then
     ENV_ARGS="${ENV_ARGS} -a \"${SCRIPTARGS}\""

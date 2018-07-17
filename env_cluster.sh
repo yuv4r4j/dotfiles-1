@@ -65,6 +65,12 @@ if [ ! -z "${CONDAENV}" ]; then
     source activate "${CONDAENV}"
 fi
 
+if [ -d "${CWD}/.git" ]; then
+    echo "Repository snapshot info:"
+    git remote -v
+    git branch -v
+fi
+
 echo "About to execute: '${CMD}' from '${CWD}'"
 mkdir -p "${CWD}" && cd "${CWD}"
 exec ${CMD}
