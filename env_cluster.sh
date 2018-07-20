@@ -39,6 +39,9 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+# For python interpreter to release stdout line by line, and not after job termination
+export PYTHONUNBUFFERED=1
+
 if [ "$#" -lt "1" ]; then
     echo "Script path is not specified"
     exit -1
@@ -64,7 +67,6 @@ echo ======= ENV ========
 export
 echo ======= ENV ========
 echo Starting on: `date`
-sync
 
 if [ ! -z "${CONDAENV}" ]; then
     echo "Activating conda environment: ${CONDAENV}"

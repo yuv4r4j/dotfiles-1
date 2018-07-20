@@ -79,7 +79,7 @@ SCRIPTARGS="$@"
 
 # validate launchable script is specified
 if [ -z "${SCRIPTPATH}" -o ! -f "${SCRIPTPATH}" ]; then
-    echo "Valid script must be specified with -s|--script key"
+    echo "Valid script must be specified, use -h for syntax help"
     exit -1
 fi
 
