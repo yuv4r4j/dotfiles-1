@@ -168,7 +168,7 @@ CMD="${CMD} -terse"
 # Redirect STDOUT
 CMD="${CMD} -o ${LOGSPATH}"
 
-ENV_SCRIPT="${HOME}/code/dotfiles/env_cluster.sh"
+ENV_SCRIPT="${HOME}/code/dotfiles/sge_env"
 ENV_ARGS="-w ${CWD}"
 if [ ! -z "${CONDAENV}" ]; then
     ENV_ARGS="${ENV_ARGS} -c ${CONDAENV}"
