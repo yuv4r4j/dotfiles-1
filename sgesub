@@ -2,6 +2,11 @@
 set -e
 #set -x
 
+if [ -z "$(which tensorboard)" ]; then
+    echo -e "===\nTensorboard missing.. activate environment first?"
+    exit -1
+fi
+
 help() {
     echo "  $0 [wrapper_args] -- <script_path> [script_args]"
     echo
@@ -183,6 +188,10 @@ echo "To cancel your job: 'qdel [-f] ${JOBID}'"
 echo "To cancel all jobs: 'qdel -u $(whoami)'"
 echo "For stats about job: 'qstat -j ${JOBID}'"
 
+killall tensorboard 2>/dev/null || true
+tensorboard --logdir=${LOGSDIR} 2>/dev/null &
+echo "Started TensorBoard at \"http://$(hostname):6006\""
+
 # Start polling job status
 #watch -n 0.5 qstat -j ${JOBID}
 
@@ -221,6 +230,7 @@ while [ ! -f ${LOGSPATH} ]; do
     WAITMSG="${WAITMSG}."
     sleep 1
 done
+
 echo
 echo ===== LOG FILE =====
 tail -f -n +1 ${LOGSPATH}
