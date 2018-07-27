@@ -120,6 +120,7 @@ CWD_IS_DEFAULT=""
 if [ -z "${CWD}" ]; then
     echo "Using CWD=${DIRNAME}"
     CWD="${DIRNAME}"
+    CWD_IS_DEFAULT="1"
 fi
 
 if [ ! -d "${CWD}" ]; then
@@ -167,6 +168,9 @@ CMD="${CMD} -l h_vmem=${VMEM}"
 echo "Preparing job '${JOBNAME}' to run in queue '${GPUQUEUE}' on '${NGPUS}' GPUs with ${VMEM} of host mem"
 
 LOGSROOT="${HOME}/logs"
+if [ -z "${CWD_IS_DEFAULT}" ]; then
+    LOGSROOT="${CWD}"
+fi
 DATE=`date '+%Y-%m-%d'`
 TIME=`date '+%H-%M-%S'`
 LOGSDIR="${LOGSROOT}/${DATE}"
