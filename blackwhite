@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+SED_CMD="s/[[:cntrl:]]\[[0-9]{1,3}m//g"
+
+while read line
+do
+  echo "$line" | sed -r ${SED_CMD}
+done < "${1:-/dev/stdin}"
