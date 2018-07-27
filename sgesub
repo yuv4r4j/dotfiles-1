@@ -173,11 +173,15 @@ if [ -z "${CWD_IS_DEFAULT}" ]; then
 fi
 DATE=`date '+%Y-%m-%d'`
 TIME=`date '+%H-%M-%S'`
-LOGSDIR="${LOGSROOT}/${DATE}"
+LOGSDIRDATE="${LOGSROOT}/${JOBNAME}/${DATE}"
+LOGSDIR="${LOGSDIRDATE}/${TIME}"
 mkdir -p ${LOGSDIR}
-LOGSPATH="${LOGSDIR}/${SCRIPTNAME}_${TIME}.txt"
+LOGSPATH="${LOGSDIR}/log.txt"
 
 echo "LOGS  : ${LOGSPATH}"
+
+# Pass --log_dir to the payload job so it puts logging artefacts same place as the wrapper
+SCRIPTARGS="${SCRIPTARGS} --log_dir ${LOGSDIR}"
 
 # Join STDERR and STDOUT
 CMD="${CMD} -j y"
