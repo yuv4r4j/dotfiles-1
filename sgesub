@@ -13,6 +13,7 @@ help() {
     echo "Wrapper around SGE 'qsub' command, takes care of BIWI-specific"
     echo "command line options, helps to check job status and log file shortly"
     echo "after job start. Refer to BIWI wiki for details. Command line options:"
+    echo "  [-j|--jobname]   : job name, else script name will be used"
     echo "  [-q|--queue]=0   : id of queue, 0 (short), 1 (mid), 2 (long)"
     echo "  [-n|--numgpus]=1 : number of GPUs to request"
     echo "  [-m|--mem]=8G    : hard limit of host memory"
@@ -20,6 +21,7 @@ help() {
     echo "  [-w|--cwd]       : execution cwd, defaults to script directory"
 }
 
+JOBNAME=""
 SCRIPTPATH=""
 SCRIPTARGS=""
 GPUQUEUEID=0
@@ -39,6 +41,10 @@ CMD="${CMD} -V"
 while [[ $# -gt 0 ]]; do
     key="$1"
     case ${key} in
+    -j|--jobname)
+        JOBNAME="$2"
+        shift 2
+        ;;
     -q|--queue)
         GPUQUEUEID="$2"
         shift 2
@@ -106,6 +112,11 @@ SCRIPTNAMEEXT=${SCRIPTPATH##*/}
 SCRIPTNAME=${SCRIPTNAMEEXT%.*}
 DIRNAME=${SCRIPTPATH%/*}
 
+if [ -z "${JOBNAME}" ]; then
+    JOBNAME="${SCRIPTNAME}"
+fi
+
+CWD_IS_DEFAULT=""
 if [ -z "${CWD}" ]; then
     echo "Using CWD=${DIRNAME}"
     CWD="${DIRNAME}"
@@ -153,7 +164,7 @@ CMD="${CMD} -l gpu=${NGPUS}"
 # Host memory limit
 CMD="${CMD} -l h_vmem=${VMEM}"
 
-echo "Preparing job '${SCRIPTNAME}' to run in queue '${GPUQUEUE}' on '${NGPUS}' GPUs with ${VMEM} of host mem"
+echo "Preparing job '${JOBNAME}' to run in queue '${GPUQUEUE}' on '${NGPUS}' GPUs with ${VMEM} of host mem"
 
 LOGSROOT="${HOME}/logs"
 DATE=`date '+%Y-%m-%d'`
@@ -180,7 +191,7 @@ if [ ! -z "${CONDAENV}" ]; then
 fi
 CMD="${CMD} ${ENV_SCRIPT} ${ENV_ARGS} -- ${SCRIPTPATH} ${SCRIPTARGS}"
 
-#echo "About to execute: '${CMD}'"
+echo "About to execute: '${CMD}'"
 JOBID=$(${CMD})
 
 echo "JOB ID: ${JOBID}"
