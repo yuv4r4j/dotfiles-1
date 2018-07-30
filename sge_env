@@ -62,6 +62,10 @@ if [ ! -z "${SCRIPTARGS}" ]; then
     CMD="${CMD} ${SCRIPTARGS}"
 fi
 
+# Lifting affinity constraints
+CPU_CORES_ENUM=$(seq -s, 0 $(($(cat /proc/cpuinfo | grep processor | wc -l)-1)))
+CMD="taskset -c ${CPU_CORES_ENUM} ${CMD}"
+
 export CUDA_VISIBLE_DEVICES="$(ls -rt /tmp/lock-gpu*/info.txt | xargs grep -h  $(whoami) | awk '{print $2}' | paste -sd "," -)"
 echo ======= ENV ========
 export
