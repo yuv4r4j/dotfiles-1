@@ -210,6 +210,7 @@ echo "For stats about job: 'qstat -j ${JOBID}'"
 killall tensorboard 2>/dev/null || true
 tensorboard --logdir=${LOGSDIR} 2>/dev/null &
 echo "Started TensorBoard at \"http://$(hostname):6006\""
+echo "To access from a remote machine, run \"ssh -L 6006:$(hostname).ee.ethz.ch:6006 $(whoami)@$(hostname).ee.ethz.ch\""
 
 # Start polling job status
 #watch -n 0.5 qstat -j ${JOBID}
