@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ ! $# -ne 1 ]; then
+    echo "Provide a masked path to images as an argument"
+    exit -1
+fi   
+
+#ffmpeg -f concat -safe 0 -i <(for f in $1; do echo "file '$(realpath $f)'"; done) -c:v libx264 -vf fps=25 -pix_fmt yuv420p out.mp4
+ffmpeg -pattern_type glob -i "$1" -c:v libx264 -vf fps=25 -r 30 -pix_fmt yuv420p out.mp4
