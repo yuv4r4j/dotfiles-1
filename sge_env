@@ -66,7 +66,12 @@ fi
 CPU_CORES_ENUM=$(seq -s, 0 $(($(cat /proc/cpuinfo | grep processor | wc -l)-1)))
 CMD="taskset -c ${CPU_CORES_ENUM} ${CMD}"
 
+# Sets CUDA devices order to match the one used in nvidia-smi https://github.com/wookayin/gpustat
+export CUDA_DEVICE_ORDER=PCI_BUS_ID
+
+# Sets CUDA devices visibility according to SGE allocation policy
 export CUDA_VISIBLE_DEVICES="$(ls -rt /tmp/lock-gpu*/info.txt | xargs grep -h  $(whoami) | awk '{print $2}' | paste -sd "," -)"
+
 echo ======= ENV ========
 export
 echo ======= ENV ========
