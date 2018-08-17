@@ -18,6 +18,7 @@ help() {
     echo "  [-n|--numgpus]=1 : number of GPUs to request"
     echo "  [-m|--mem]=8G    : hard limit of host memory"
     echo "  [-c|--conda]     : conda env to activate prior to running script"
+    echp "  [-l|--logroot]   : override logroot (defaults to cwd or  ~/logs)"
     echo "  [-w|--cwd]       : execution cwd, defaults to script directory"
 }
 
@@ -28,6 +29,7 @@ GPUQUEUEID=0
 NGPUS=1
 VMEM=8G
 CONDAENV=""
+LOGSROOT=""
 CWD=""
 
 CMD="qsub"
@@ -59,6 +61,10 @@ while [[ $# -gt 0 ]]; do
         ;;
     -c|--conda)
         CONDAENV="$2"
+        shift 2
+        ;;
+    -l|--logroot)
+        LOGSROOT="$2"
         shift 2
         ;;
     -w|--cwd)
@@ -167,10 +173,14 @@ CMD="${CMD} -l h_vmem=${VMEM}"
 
 echo "Preparing job '${JOBNAME}' to run in queue '${GPUQUEUE}' on '${NGPUS}' GPUs with ${VMEM} of host mem"
 
-LOGSROOT="${HOME}/logs"
-if [ -z "${CWD_IS_DEFAULT}" ]; then
-    LOGSROOT="${CWD}"
+if [ -z "${LOGSROOT}" ]; then
+    if [ -z "${CWD}" ]; then
+        LOGSROOT="${HOME}/logs"
+    else
+        LOGSROOT="${CWD}"
+    fi
 fi
+
 DATE=`date '+%Y-%m-%d'`
 TIME=`date '+%H-%M-%S'`
 LOGSDIRDATE="${LOGSROOT}/${JOBNAME}/${DATE}"
