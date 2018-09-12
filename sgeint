@@ -1,2 +1,3 @@
 #!/bin/sh
-qrsh -m n -l h_vmem=20G -l gpu
+
+qrsh -m n -l h_vmem=20G -l gpu=${1:-1}

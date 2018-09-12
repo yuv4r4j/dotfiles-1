@@ -160,8 +160,8 @@ esac
 # Dispatch GPU queue
 CMD="${CMD} -q ${GPUQUEUE}"
 
-if [ "${NGPUS}" -lt "0" -o "${NGPUS}" -gt "6" ]; then
-    echo "Invalid -n|--numgpus number, can be between 0 and 6"
+if [ "${NGPUS}" -lt "0" -o "${NGPUS}" -gt "16" ]; then
+    echo "Invalid -n|--numgpus number, can be between 0 and 16"
     exit -1
 fi
 
