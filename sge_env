@@ -89,6 +89,9 @@ if [ -d "${SCRIPTDIR}/.git" ]; then
     git --git-dir="${SCRIPTDIR}/.git" branch -v
 fi
 
+echo "Disk and shared memory usage info:"
+df -h
+
 echo "About to execute: \"${CMD}\" from \"${CWD}\""
 mkdir -p "${CWD}" && cd "${CWD}"
 exec ${CMD}
